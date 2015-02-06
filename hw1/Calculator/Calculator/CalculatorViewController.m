@@ -22,7 +22,7 @@
 {
     if(!_brain) _brain = [[CalculatorBrain alloc]init];
     return _brain;
-}
+}		
 
 - (IBAction)digitPressed:(UIButton *)sender {
     
