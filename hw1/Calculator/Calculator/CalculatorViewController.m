@@ -11,6 +11,7 @@
 
 @interface CalculatorViewController ()
 @property (nonatomic) BOOL userIsInTheMiddleOfEnteringANumber;
+@property (nonatomic) BOOL isFloatingPoint;
 @property (nonatomic, strong) CalculatorBrain *brain;
 @end
 
@@ -42,11 +43,44 @@
     NSString *operation = [sender currentTitle];
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g",result];
+    
+    self.enteredText.text = [[self.enteredText.text stringByAppendingString:@" "] stringByAppendingString:operation];
 }
     
 - (IBAction)enterPressed {
     [self.brain pushOperand:[self.display.text doubleValue]];
+    if(self.userIsInTheMiddleOfEnteringANumber){
+        self.enteredText.text = [[self.enteredText.text stringByAppendingString:@" "] stringByAppendingString:self.display.text];
+    }
     self.userIsInTheMiddleOfEnteringANumber = NO;
+    self.isFloatingPoint = NO;
 }
+
+- (IBAction)pointPressed:(UIButton *)sender {
+    
+    NSRange point = [self.display.text rangeOfString:@"."];
+    if(point.location == NSNotFound || !self.isFloatingPoint){
+        
+        if(!self.userIsInTheMiddleOfEnteringANumber){
+            self.display.text = @"0.";
+            
+        } else {
+            self.display.text = [self.display.text stringByAppendingString:@"."];
+            
+        }
+   
+    }
+    self.userIsInTheMiddleOfEnteringANumber=YES;
+    self.isFloatingPoint = YES;
+
+}
+- (IBAction)clearPressed {
+    self.display.text = @"0";
+    self.enteredText.text = @"";
+    self.userIsInTheMiddleOfEnteringANumber=NO;
+    self.isFloatingPoint=NO;
+    [self.brain clear];
+}
+
 
 @end
