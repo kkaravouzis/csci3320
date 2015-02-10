@@ -49,6 +49,7 @@
     
 - (IBAction)enterPressed {
     [self.brain pushOperand:[self.display.text doubleValue]];
+    
     if(self.userIsInTheMiddleOfEnteringANumber){
         self.enteredText.text = [[self.enteredText.text stringByAppendingString:@" "] stringByAppendingString:self.display.text];
     }
@@ -80,7 +81,48 @@
     self.userIsInTheMiddleOfEnteringANumber=NO;
     self.isFloatingPoint=NO;
     [self.brain clear];
+}	
+
+- (IBAction)backspacePressed {
+    if(self.userIsInTheMiddleOfEnteringANumber){
+        int substring = self.display.text.length;
+       
+        if(substring > 0){
+            self.display.text = [self.display.text substringToIndex:substring-1];
+        }
+        
+        if ((substring-1 == 0) || (self.isFloatingPoint && substring-1 == 1)){
+            self.userIsInTheMiddleOfEnteringANumber=NO;
+            self.display.text = @"0";
+        }
+    }
 }
 
+- (IBAction)signPressed {
+    
+    if([self isNegative]){
+        self.display.text = [self.display.text substringFromIndex:1];
+    } else {
+        self.display.text = [@"-" stringByAppendingString:self.display.text];
+    }
+                              
+     if (!self.userIsInTheMiddleOfEnteringANumber){
+         [self.brain popOperand];
+         [self.brain pushOperand:[self.display.text doubleValue]];
+    }
+
+}
+
+- (BOOL)isNegative{
+    BOOL result = NO;
+    UniChar c = [self.display.text characterAtIndex:0];
+    NSString *value = [[NSString alloc] initWithCharacters:&c length:1];
+        
+    if([value isEqualToString:@"-"]){
+        result = YES;
+    }
+    
+    return result;
+}
 
 @end
