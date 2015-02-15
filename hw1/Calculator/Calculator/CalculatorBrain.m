@@ -63,8 +63,9 @@
         result = cos([self popOperand]*M_PI/180);
     } else if([operation isEqualToString:@"√"]){
         result = sqrt([self popOperand]);
+    } else if([operation isEqualToString:@"∏"]){
+        result = M_PI;
     }
-        
     
     [self pushOperand:result];
         return result;

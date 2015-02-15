@@ -100,7 +100,10 @@
 
 - (IBAction)signPressed {
     
-    if([self isNegative]){
+    double currentValue = [self.display.text doubleValue];
+    
+    
+    if(currentValue < 0 ){
         self.display.text = [self.display.text substringFromIndex:1];
     } else {
         self.display.text = [@"-" stringByAppendingString:self.display.text];
@@ -113,16 +116,15 @@
 
 }
 
-- (BOOL)isNegative{
-    BOOL result = NO;
-    UniChar c = [self.display.text characterAtIndex:0];
-    NSString *value = [[NSString alloc] initWithCharacters:&c length:1];
-        
-    if([value isEqualToString:@"-"]){
-        result = YES;
+- (IBAction)piPressed:(UIButton *)sender {
+    if(self.userIsInTheMiddleOfEnteringANumber){
+        [self enterPressed];
     }
     
-    return result;
+    [self operationPressed:sender];
+
 }
+
+
 
 @end
