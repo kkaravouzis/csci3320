@@ -27,6 +27,9 @@
 
 - (IBAction)digitPressed:(UIButton *)sender {
     
+    //clear '=' sign from enteredText display
+    [self checkEqualSign];
+    
     NSString *digit = [sender currentTitle];
     if(self.userIsInTheMiddleOfEnteringANumber){
         self.display.text = [self.display.text stringByAppendingString:digit];
@@ -37,6 +40,9 @@
 }
 - (IBAction)operationPressed:(UIButton *)sender
 {
+    //clear equal sign from enteredText display
+    [self checkEqualSign];
+    
     if (self.userIsInTheMiddleOfEnteringANumber){
         [self enterPressed];
     }
@@ -44,13 +50,18 @@
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g",result];
     
-    self.enteredText.text = [[self.enteredText.text stringByAppendingString:@" "] stringByAppendingString:operation];
+    //add operation to display, except for +/- operation. 
+    if (![operation hasPrefix:@"+/-"]) {
+        self.enteredText.text = [[[self.enteredText.text stringByAppendingString:@" "] stringByAppendingString:operation] stringByAppendingString:@"="];
+    }
+    
 }
     
 - (IBAction)enterPressed {
     [self.brain pushOperand:[self.display.text doubleValue]];
     
-    if(self.userIsInTheMiddleOfEnteringANumber){
+           
+        if(self.userIsInTheMiddleOfEnteringANumber){
         self.enteredText.text = [[self.enteredText.text stringByAppendingString:@" "] stringByAppendingString:self.display.text];
     }
     self.userIsInTheMiddleOfEnteringANumber = NO;
@@ -98,22 +109,23 @@
     }
 }
 
-- (IBAction)signPressed {
-    
+
+- (IBAction)signPressed:(UIButton *)sender {
     double currentValue = [self.display.text doubleValue];
     
-    
-    if(currentValue < 0 ){
-        self.display.text = [self.display.text substringFromIndex:1];
-    } else {
-        self.display.text = [@"-" stringByAppendingString:self.display.text];
+    //if the displayed value is negative remove the minus sign, otherwise add  a minus sign to the display   
+    if (currentValue)
+    {
+        if(currentValue < 0 ){
+            self.display.text = [self.display.text substringFromIndex:1];
+        } else {
+            self.display.text = [@"-" stringByAppendingString:self.display.text];
+        }
     }
-                              
-     if (!self.userIsInTheMiddleOfEnteringANumber){
-         [self.brain popOperand];
-         [self.brain pushOperand:[self.display.text doubleValue]];
+    //if the operation is performed on a result, send to brain to process
+    if (!self.userIsInTheMiddleOfEnteringANumber){
+        [self operationPressed:sender];
     }
-
 }
 
 - (IBAction)piPressed:(UIButton *)sender {
@@ -125,6 +137,11 @@
 
 }
 
-
+- (void) checkEqualSign
+{
+    if ([self.enteredText.text hasSuffix:@"="]){
+        self.enteredText.text = [self.enteredText.text stringByReplacingOccurrencesOfString:@"=" withString:@"" ];
+    }
+}
 
 @end
