@@ -21,6 +21,7 @@
 
 - (CalculatorBrain *)brain
 {
+    // Allocate and initialize an instance of Caluclator Brain
     if(!_brain) _brain = [[CalculatorBrain alloc]init];
     return _brain;
 }		
@@ -30,7 +31,11 @@
     //clear '=' sign from enteredText display
     [self checkEqualSign];
     
+    //determine which digit was pressed
     NSString *digit = [sender currentTitle];
+    
+    //output pressed digits to display appending only if the user is
+    //in the middle of entering a number
     if(self.userIsInTheMiddleOfEnteringANumber){
         self.display.text = [self.display.text stringByAppendingString:digit];
     } else {
@@ -46,6 +51,8 @@
     if (self.userIsInTheMiddleOfEnteringANumber){
         [self enterPressed];
     }
+    //determine which operation was pressed and display it in the entered text field
+    //display the result of the operation in the calculator display
     NSString *operation = [sender currentTitle];
     double result = [self.brain performOperation:operation];
     self.display.text = [NSString stringWithFormat:@"%g",result];
@@ -58,9 +65,10 @@
 }
     
 - (IBAction)enterPressed {
+    //push the operand to the program stack
     [self.brain pushOperand:[self.display.text doubleValue]];
     
-           
+        //add to the entered text display
         if(self.userIsInTheMiddleOfEnteringANumber){
         self.enteredText.text = [[self.enteredText.text stringByAppendingString:@" "] stringByAppendingString:self.display.text];
     }
@@ -87,6 +95,8 @@
 
 }
 - (IBAction)clearPressed {
+    //clear all entered operations and operands from the displays and return calculator
+    //to a zero state
     self.display.text = @"0";
     self.enteredText.text = @"";
     self.userIsInTheMiddleOfEnteringANumber=NO;
@@ -95,9 +105,13 @@
 }	
 
 - (IBAction)backspacePressed {
+    
+    //allow the user to delete digits if in the middle of entering a new operand
     if(self.userIsInTheMiddleOfEnteringANumber){
         int substring = self.display.text.length;
        
+        //check to see if the number is floating point or not in order to handle
+        //the clearing of the number correctly
         if(substring > 0){
             self.display.text = [self.display.text substringToIndex:substring-1];
         }
@@ -129,6 +143,8 @@
 }
 
 - (IBAction)piPressed:(UIButton *)sender {
+    
+    //the PI button is implemented as an operation
     if(self.userIsInTheMiddleOfEnteringANumber){
         [self enterPressed];
     }
@@ -139,6 +155,7 @@
 
 - (void) checkEqualSign
 {
+    //function clears the equal sign from the entered text display
     if ([self.enteredText.text hasSuffix:@"="]){
         self.enteredText.text = [self.enteredText.text stringByReplacingOccurrencesOfString:@"=" withString:@"" ];
     }
